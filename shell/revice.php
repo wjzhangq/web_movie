@@ -8,6 +8,8 @@ if (isset($_POST['b']) && isset($_POST['m'])){
 		die('error:md5 error!');
 	}
 	
+	$body = urldecode($body);
+	
 	$day = date('Y-m-d');
 	$path = dirname(__FILE__) . '/tmp/movieList_' . $day . '.php';
 	
