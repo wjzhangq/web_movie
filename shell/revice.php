@@ -3,6 +3,7 @@
 if (isset($_POST['b']) && isset($_POST['m'])){
 	$body = $_POST['b'];
 	$md5 = $_POST['m'];
+	var_dump($md5, $body);
 	if (md5($body) != $md5){
 		die('error:md5 error!');
 	}
