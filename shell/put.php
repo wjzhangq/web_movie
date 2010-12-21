@@ -1,19 +1,16 @@
 <?php
 $body = file_get_contents('fileList.txt');
+$body = urlencode($body);
 
-$api = 'http://127.0.0.1/web_movie/revice.php';
+$api = 'http://movie.zhangwenjin.com/shell/revice.php';
 
-$post_string = http_build_query(array('b'=>$body, 'm'=>md5($body)));
-$context = array( 
-	'http'=>array( 
-	'method'=>'POST', 
-	'header'=>'Content-type: application/x-www-form-urlencoded'."\r\n". 
-		"User-Agent : wj\r\n". 
-		'Content-length: '.strlen($post_string)+8, 
-		'content'=>$post_string) 
-);
-$stream_context = stream_context_create($context); 
-$ret = file_get_contents($api, false, $stream_context);
-var_dump($ret);
+$ch = curl_init();
+curl_setopt($ch,CURLOPT_URL,$api);
+curl_setopt($ch,CURLOPT_POSTFIELDS,array('b'=>$body, 'm'=>md5($body)));
+curl_setopt($ch,CURLOPT_RETURNTRANSFER,true);
+curl_setopt($ch,CURLOPT_USERAGENT,'Mozilla/5.0 (Windows; U; Windows NT 5.1; zh-CN; rv:1.9.1.2) Gecko/20090729 Firefox/3.5.2');
+$data = curl_exec($ch);
+curl_close($ch);
+var_dump($data);
 
 ?>
