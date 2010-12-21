@@ -1,11 +1,6 @@
 <?php
 $body = file_get_contents('fileList.txt');
 
-
-
-
-
-
 $api = 'http://127.0.0.1/web_movie/revice.php';
 
 $post_string = http_build_query(array('b'=>$body, 'm'=>md5($body)));

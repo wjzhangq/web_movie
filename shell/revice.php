@@ -6,8 +6,14 @@ if (isset($_POST['b']) && isset($_POST['m'])){
 	if (md5($body) != $md5){
 		die('error:md5 error!');
 	}
-	$data = eval('return ' . $body . ';');
-	print_r( $data);
+	
+	$day = date('Y-m-d');
+	$path = dirname(__FILE__) . '/tmp/movieList_' . $day . '.php';
+	
+	$content = "<?php\nreturn " . $body . ';\n?>';
+	file_put_contents($path, $content); 
+	
+	die('ok');
 }else{
 	die('error:No Data');
 }
