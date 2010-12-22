@@ -3,7 +3,7 @@
 if (isset($_POST['b']) && isset($_POST['m']) && isset($_POST['a'])){
 	require 'init.php';
 	
-	$body = urldecode($_POST['b']);
+	$body = base64_decode(urldecode($_POST['b']));
 	$md5 = $_POST['m'];
 	$auth = $_POST['a'];
 

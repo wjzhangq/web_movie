@@ -20,7 +20,7 @@ function main($host, $user='Guest', $pwd=''){
 	}
 	
 	
-	$body =  json_encode(array_values($FileList));
+	$body =  base64_encode(json_encode(array_values($FileList)));
 	
 	$url = $config['revice_url'];
 
