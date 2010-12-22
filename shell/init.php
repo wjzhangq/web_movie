@@ -3,7 +3,7 @@ define('APP_ROOT', dirname(__FILE__));
 require APP_ROOT . '/lib.php';
 
 if (is_file(APP_ROOT . '/config.php')){
-	$config = incldue(APP_ROOT . '/config.php');
+	$config = include(APP_ROOT . '/config.php');
 }else{
 	$config = array();
 }
