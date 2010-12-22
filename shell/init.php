@@ -1,5 +1,6 @@
 <?php
 define('APP_ROOT', dirname(__FILE__));
+date_default_timezone_set("Asia/Shanghai");
 require APP_ROOT . '/lib.php';
 
 if (is_file(APP_ROOT . '/config.php')){

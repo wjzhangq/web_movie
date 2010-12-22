@@ -33,6 +33,16 @@ function split_start_end($start, $end, $str){
 	return $list;
 }
 
+function get_conn(){
+	global $config;
+	$conn = mysql_connect($config['db_host'], $config['db_user'], $config['db_pwd']);
+	if (!$conn){
+		throw new Exception('no connect');
+	}
+	mysql_select_db($config['db_name'], $conn);
+	return $conn;
+}
+
 function _mod($classname){
 	global $config;
 	static $mods = array();
@@ -42,11 +52,20 @@ function _mod($classname){
 			case 'db':
 				$db = new simpleMysql();
 				$db->connect($config['db_host'], $config['db_user'], $config['db_pwd']);
-				$db->select_db($config['db_name']);
+				$db->select_db($config['db_name'], $db->conn);
 				$mods['db'] = $db;
 				break;
 			default:
 				$mods[$classname] = false;
+		}
+	}else{
+		if ($classname == 'db'){
+			$db = $mods['db'];
+			$db->close();
+			$db = new simpleMysql();
+			$db->connect($config['db_host'], $config['db_user'], $config['db_pwd']);
+			$db->select_db($config['db_name']);
+			$mods['db'] = $db;
 		}
 	}
 
@@ -72,7 +91,7 @@ function http_post($url, $data){
 }
 
 class simpleMysql{
-	var $conn;
+	public  $conn;
 	
 	function __construct(){
 		
