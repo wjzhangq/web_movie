@@ -19,7 +19,7 @@ if (isset($_POST['b']) && isset($_POST['m']) && isset($_POST['a'])){
 	}
 	
 	$body = base64_decode($body);
-	echo $body;
+
 	
 	$data = json_decode($body);
 	unset($body);
