@@ -5,15 +5,16 @@ main(date('Y-m-d'));
 function main($day){
 	$raw_list = get_raw_list();
 	
-	// foreach($raw_list as $k=>$v){
-	// 	//search
-	// 	wjlog(sprintf('start search "%s"', $v));
-	// 	$douban_id = douban_search($v);
-	// 	if ($douban_id > 0){
-	// 		wjlog(sprintf('"%s" douban id is %s', $v, $douban_id));
-	// 		insert_douban(array('douban_id'=>$douban_id, 'mid'=>$k, 'en_name'=>$v));
-	// 	}
-	// }
+    foreach($raw_list as $k=>$v){
+        //search
+        wjlog(sprintf('start search "%s"', $v));
+        $douban_id = douban_search($v);
+        if ($douban_id > 0){
+            wjlog(sprintf('"%s" douban id is %s', $v, $douban_id));
+            insert_douban(array('douban_id'=>$douban_id, 'mid'=>$k, 'en_name'=>$v));
+        }
+    }
+    exit;
 
 	$raw_list = get_undouban_list();
 	foreach($raw_list as $k=>$v){
@@ -70,7 +71,7 @@ function insert_douban($row){
 }
 
 function update_douban($row){
-
+    
 }
 
 function douban_search($en_name){
