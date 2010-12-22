@@ -12,11 +12,14 @@ if (isset($_POST['b']) && isset($_POST['m']) && isset($_POST['a'])){
 		die('error:Need Auth');
 	}
 	
-	echo $body;
+
 
 	if (md5($body) != $md5){
 		die('error:md5 error!');
 	}
+	
+	$body = base64_decode($body);
+	echo $body;
 	
 	$data = json_decode($body);
 	unset($body);
