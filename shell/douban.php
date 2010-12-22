@@ -15,6 +15,7 @@ function main($day){
         }
     }
     exit;
+    
 
 	$raw_list = get_undouban_list();
 	foreach($raw_list as $k=>$v){
