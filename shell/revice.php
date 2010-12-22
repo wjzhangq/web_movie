@@ -11,6 +11,8 @@ if (isset($_POST['b']) && isset($_POST['m']) && isset($_POST['a'])){
 	if ($auth != $config['auth']){
 		die('error:Need Auth');
 	}
+	
+	echo $body;
 
 	// if (md5($body) != $md5){
 	// 	die('error:md5 error!');
