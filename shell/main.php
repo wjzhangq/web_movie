@@ -1,4 +1,5 @@
 <?php
+require 'init.php';
 
 main();
 
@@ -192,83 +193,6 @@ function get_zh_name($name){
 	return '';
 }
 
-function wjlog($str){
-	echo date('Y-m-d H:i:s') . "\t" . $str . "\n";
-}
 
-function get_uni_name($name){
-	$name = strtolower($name);
-	$name = str_replace(array('-', '.'), array('_', '_'), $name);
-	return preg_replace('/[^a-z|0-9|\_]+/', '', $name);
-}
-
-function split_start_end($start, $end, $str){
-	$curr_pos = 0;
-	$len = strlen($str) - 1;
-	$list = array();
-	while($curr_pos < $len){
-		$start_pos = strpos($str, $start, $curr_pos);
-		if ($start_pos === false){
-			break;
-		}
-		$curr_pos = $start_pos + strlen($start);
-		$end_pos = strpos($str, $end, $curr_pos);
-		if ($end_pos === false){
-			break;
-		}
-		$curr_pos = $end_pos + strlen($end);
-		
-		$list[] = substr($str, $start_pos, $curr_pos - $start_pos);
-	}
-	
-	return $list;
-}
-
-class simpleMysql{
-	var $conn;
-	
-	function __construct(){
-		
-	}
-	
-	function getAll($sql, $assoc=true){
-		$result = $this->query($sql, $this->conn);
-		if (!$result){
-			throw new Exception(mysql_error($this->conn));
-		}
-		$ret = array();
-		if ($assoc){
-			while ($row = mysql_fetch_assoc($result)){
-				$ret[] = $row;
-			}
-		}else{
-			while ($row = mysql_fetch_row($result)){
-				$ret[] = $row;
-			}
-		}
-		
-		return $ret;
-	}
-	
-	function __call($method, $param){
-		$method = 'mysql_' . $method;
-		if (!function_exists($method)){
-			throw new Exception(sprintf('Unknown method "%s"', $method));
-		}
-		
-		if ($method == 'mysql_connect'){
-			$this->conn = call_user_func_array('mysql_connect', $param);
-			if (!$this->conn) {
-				throw new Exception(mysql_error());
-			}
-		}else{
-			$ret = call_user_func_array($method, $param);
-			if ($ret === false){
-				throw new Exception(mysql_error());
-			}
-			return $ret;
-		}
-	}
-}
 
 ?>
