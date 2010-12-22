@@ -3,7 +3,7 @@
 if (isset($_POST['b']) && isset($_POST['m']) && isset($_POST['a'])){
 	require 'init.php';
 	
-	$body = base64_decode(urldecode($_POST['b']));
+	$body = urldecode($_POST['b']);
 	$md5 = $_POST['m'];
 	$auth = $_POST['a'];
 
@@ -14,9 +14,9 @@ if (isset($_POST['b']) && isset($_POST['m']) && isset($_POST['a'])){
 	
 	echo $body;
 
-	// if (md5($body) != $md5){
-	// 	die('error:md5 error!');
-	// }
+	if (md5($body) != $md5){
+		die('error:md5 error!');
+	}
 	
 	$data = json_decode($body);
 	unset($body);
