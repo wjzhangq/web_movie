@@ -33,15 +33,6 @@ function split_start_end($start, $end, $str){
 	return $list;
 }
 
-function get_conn(){
-	global $config;
-	$conn = mysql_connect($config['db_host'], $config['db_user'], $config['db_pwd']);
-	if (!$conn){
-		throw new Exception('no connect');
-	}
-	mysql_select_db($config['db_name'], $conn);
-	return $conn;
-}
 
 function _mod($classname){
 	global $config;
@@ -52,20 +43,11 @@ function _mod($classname){
 			case 'db':
 				$db = new simpleMysql();
 				$db->connect($config['db_host'], $config['db_user'], $config['db_pwd']);
-				$db->select_db($config['db_name'], $db->conn);
+				$db->select_db($config['db_name']);
 				$mods['db'] = $db;
 				break;
 			default:
 				$mods[$classname] = false;
-		}
-	}else{
-		if ($classname == 'db'){
-			$db = $mods['db'];
-			$db->close();
-			$db = new simpleMysql();
-			$db->connect($config['db_host'], $config['db_user'], $config['db_pwd']);
-			$db->select_db($config['db_name']);
-			$mods['db'] = $db;
 		}
 	}
 
@@ -92,16 +74,16 @@ function http_post($url, $data){
 
 class simpleMysql{
 	public  $conn;
+	var $connect_args;
+	var $db_name;
 	
 	function __construct(){
 		
 	}
 	
 	function getAll($sql, $assoc=true){
-		$result = $this->query($sql, $this->conn);
-		if (!$result){
-			throw new Exception(mysql_error($this->conn));
-		}
+		$result = $this->query($sql);
+
 		$ret = array();
 		if ($assoc){
 			while ($row = mysql_fetch_assoc($result)){
@@ -116,6 +98,48 @@ class simpleMysql{
 		return $ret;
 	}
 	
+	function query($sql){
+		for($i=0; $i < 2; $i++){
+			$ret = mysql_query($sql, $this->conn);
+			if ($ret !== false){
+				break;
+			}
+			$msg = mysql_error($this->conn);
+			$no = mysql_errno($this->conn);
+			if ($no == 2006){
+				// gone away
+				call_user_func_array(array($this,'connect'), $this->connect_args);
+				$this->select_db($this->db_name);
+			}else{
+				throw new Exception($msg, $no);
+			}
+		}
+		
+		return $ret;
+	}
+	
+	function connect(){
+		$args = func_get_args();
+		if ($this->conn){
+			mysql_close($this->conn);
+			$this->conn = null;
+		}
+		
+		$this->conn = call_user_func_array('mysql_connect', $args);
+		if (!$this->conn) {
+			throw new Exception(mysql_error(), mysql_errno());
+		}
+		$this->connect_args = $args;
+	}
+	
+	function select_db($name){
+		$ret = mysql_select_db($name, $this->conn);
+		if (!$ret){
+			throw new Exception(mysql_error($this->conn), mysql_errno($this->conn));
+		}
+		$this->db_name = $name;
+	}
+	
 	function __call($method, $param){
 		$method = 'mysql_' . $method;
 		if (!function_exists($method)){
@@ -125,7 +149,7 @@ class simpleMysql{
 		if ($method == 'mysql_connect'){
 			$this->conn = call_user_func_array('mysql_connect', $param);
 			if (!$this->conn) {
-				throw new Exception(mysql_error());
+				throw new Exception(mysql_error(), mysql_errno());
 			}
 		}else{
 			$ret = call_user_func_array($method, $param);

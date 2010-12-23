@@ -14,8 +14,7 @@ function main($day){
             insert_douban(array('douban_id'=>$douban_id, 'mid'=>$k, 'en_name'=>$v));
         }
     }
-    exit;
-    
+
 
 	$raw_list = get_undouban_list();
 	foreach($raw_list as $k=>$v){
@@ -47,11 +46,9 @@ function get_raw_list(){
 }
 
 function get_undouban_list(){
-	$conn = get_conn();
 	$db = _mod('db');
-	$db->conn = $conn;
-	
-	$sql = "SELECT `mid`, `douban_id` FROM `wj_douban` WHERE `pubdate` IS NULL";
+
+	$sql = "SELECT `mid`, `douban_id` FROM `wj_douban` WHERE `pubdate` IS NULL or `pubdate`=''";
 	$raw_list = $db->getAll($sql, false);
 	
 	$ret = array();
@@ -63,16 +60,42 @@ function get_undouban_list(){
 }
 
 function insert_douban($row){
-	$conn = get_conn();
+	$db = _mod('db');
 	$sql = "INSERT IGNORE INTO `wj_douban` (`mid`, `douban_id`, `en_name`) VALUES";
 	$sql = $sql . sprintf("(%d, '%s', '%s')", $row['mid'], $row['douban_id'], addslashes($row['en_name']));
 	
-	$ret = mysql_query($sql, $conn);
-	mysql_close($conn);
+	try{
+		$db->query($sql);
+	}catch(Exception $e){
+		var_dump($e);
+	}
+	
 }
 
-function update_douban($row){
-    
+function update_douban($mid, $entry){
+	$day = date('Y-m-d');
+    $fileds = array('zh_name','pubdate','imdb','img_url','summary','tags');
+	
+	$set = array();
+	foreach($fileds as $v){
+		if (isset($entry[$v])){
+			$set[] = "`{$v}`='" . addslashes($entry[$v])  . "'";
+		}
+	}
+	if ($set){
+		$set[] = "`update`='{$day}'";
+		$sql = "UPDATE `wj_douban` SET " . implode(',', $set) . " WHERE `mid`='{$mid}'";
+		$db = _mod('db');
+		try{
+			$db->query('set names utf8');
+			$db->query($sql);
+		}catch(Exception $e){
+			var_dump($e);
+		}
+
+	}
+	
+	
 }
 
 function douban_search($en_name){
