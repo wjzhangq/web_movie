@@ -1,19 +1,26 @@
 <?php
 require 'init.php';
-main(date('Y-m-d'));
+$only_update = 0;
+if (isset($argv[1]) && $argv[1] == 'update'){
+	$only_update = 1;
+}
 
-function main($day){
-	$raw_list = get_raw_list();
-	
-    foreach($raw_list as $k=>$v){
-        //search
-        wjlog(sprintf('start search "%s"', $v));
-        $douban_id = douban_search($v);
-        if ($douban_id > 0){
-            wjlog(sprintf('"%s" douban id is %s', $v, $douban_id));
-            insert_douban(array('douban_id'=>$douban_id, 'mid'=>$k, 'en_name'=>$v));
-        }
-    }
+main(date('Y-m-d'), $only_update);
+
+function main($day, $only_update=0){
+	if ($only_update){
+		$raw_list = get_raw_list();
+
+	    foreach($raw_list as $k=>$v){
+	        //search
+	        wjlog(sprintf('start search "%s"', $v));
+	        $douban_id = douban_search($v);
+	        if ($douban_id > 0){
+	            wjlog(sprintf('"%s" douban id is %s', $v, $douban_id));
+	            insert_douban(array('douban_id'=>$douban_id, 'mid'=>$k, 'en_name'=>$v));
+	        }
+	    }		
+	}
 
 
 	$raw_list = get_undouban_list();
