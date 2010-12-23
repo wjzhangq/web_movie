@@ -8,7 +8,7 @@ if (isset($argv[1]) && $argv[1] == 'update'){
 main(date('Y-m-d'), $only_update);
 
 function main($day, $only_update=0){
-	if ($only_update){
+	if ($only_update == 0){
 		$raw_list = get_raw_list();
 
 	    foreach($raw_list as $k=>$v){
