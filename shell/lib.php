@@ -76,9 +76,12 @@ class simpleMysql{
 	public  $conn;
 	var $connect_args;
 	var $db_name;
+	var $charset = '';
 	
-	function __construct(){
-		
+	function __construct($charset=''){
+		if ($charset){
+			$this->charset = $charset;
+		}
 	}
 	
 	function getAll($sql, $assoc=true){
@@ -130,6 +133,9 @@ class simpleMysql{
 			throw new Exception(mysql_error(), mysql_errno());
 		}
 		$this->connect_args = $args;
+		if ($this->charset){
+			mysql_set_charset($this->charset, $this->conn);
+		}
 	}
 	
 	function select_db($name){
